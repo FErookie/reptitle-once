@@ -25,8 +25,7 @@ function getNoticeTitleAndUrl(url) {
                 } else {
                     let $ = cheerio.load(res.text);
                     let data = [];
-                    let html = $('div.title_content');
-                    console.log(html);
+                    let html = $('div.ny_list');
                     html.find('li').each((index, element) => {
                         data.push({
                             name: element.children[0].children[0].data,
@@ -35,9 +34,16 @@ function getNoticeTitleAndUrl(url) {
                     });
                     html.find('a.Next').each((index, element) => {
                         if (element.children[0].data === '下页') {
-                            data.push({
-                                next: base + '/xbtz/xbtz.htm/' + /[\s\S]{0,200}([0-9]{1,10}.htm)$/.exec(element.attribs.href)[1]
-                            })
+                            console.log(element.attribs.href)
+                            if(element.attribs.href === 'xbtz/20.htm'){
+                                data.push({
+                                    next: base + '/xbtz/' + element.attribs.href
+                                })
+                            }else{
+                                data.push({
+                                    next: base + '/xbtz/xbtz/' + element.attribs.href
+                                })
+                            }
                         }
                     });
                     resolve(data);
@@ -64,7 +70,14 @@ function getAllData(data) {
                     value.url = data.url;
                     value.time = new Date();
                     //该项为原始通知部分网页，若有图片应注意图片的src需添加前缀，同时应该去除所有标签class,开发区校区通知不需要故而省去，只执行添加附件
-                    let content = $('div#vsb_content_7');
+                    let content = $('div#vsb_content');
+                    if(content.html() == null){
+                        console.log(1);
+                        content = $('div.content01');
+                        console.log(content.html());
+                    }
+                    //console.log(content.html());
+
                     let files = $('form[name=_newscontent_fromname] > ul');
                     files.find('li').each((index, element) => {
                         let temp = element.children[1].attribs.href;
@@ -83,7 +96,6 @@ function getAllData(data) {
                         });
                     }
                     value.body = content.html();
-                    console.log(content.html());
                     value.fileLinks = file;
                     value.type = newsType.EDANotice;
                     value.clickCount = 0;
