@@ -1,0 +1,5 @@
+先将config下config.js文件中db中内容修改为本地数据库信息，type中为新闻种类可添加
+
+models下create.js文件可单独执行，执行结果是在本地创建News表
+
+爬虫文件均保存在task下，最终执行index.js(需将导入文件修改为你要测试的文件)
