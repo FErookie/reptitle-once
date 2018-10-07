@@ -1,0 +1,18 @@
+{
+  "name": "reptile",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "sequelize": "^4.38.0",
+    "superagent": "^3.8.3",
+    "cheerio": "^1.0.0-rc.2",
+    "pg": "^7.4.3",
+    "pg-hstore": "^2.3.2"
+  },
+  "author": "",
+  "license": "MIT"
+}
