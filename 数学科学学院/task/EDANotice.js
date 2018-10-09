@@ -10,7 +10,7 @@ const cheerio = require('cheerio');
 const newsType = require('../config/config').type;
 
 const base = 'http://math.dlut.edu.cn';
-const firstPage = '/ggytz/bkstz.htm'; //新闻首页
+const firstPage = '/xsgz_b_1/tzgg.htm'; //新闻首页
 
 let db = require('../models/index');
 let news = db.models.News;
@@ -28,16 +28,23 @@ function getNoticeTitleAndUrl(url) {
                     let html = $('div.ny_about');
                     let i = 0;
                     html.find('li').each((index, element) => {
-                        data.push({
-                            name: element.children[1].next.attribs.title,
-                            url: base + /(\/info[\s\S]{0,200})/.exec(element.children[1].next.attribs.href)[1]
-                        })
+                        if(element.children[1].next.attribs.href[0] === '.'){
+                            data.push({
+                                name: element.children[1].next.attribs.title,
+                                url: base + /(\/info[\s\S]{0,200})/.exec(element.children[1].next.attribs.href)[1]
+                            })
+                        }else{
+                            data.push({
+                                name: element.children[1].next.attribs.title,
+                                url:  element.children[1].next.attribs.href
+                            })
+                        }
                     });
 
                     html.find('a.Next').each((index, element) => {
                         if (element.children[0].data === '下页') {
                             data.push({
-                                next: base + '/ggytz/bkstz/' + /[\s\S]{0,200}([0-9]{1,10}.htm)$/.exec(element.attribs.href)[1]
+                                next: base + '/xsgz_b_1/tzgg/' + /[\s\S]{0,200}([0-9]{1,10}.htm)$/.exec(element.attribs.href)[1]
                             })
                         }
                     });
@@ -58,7 +65,7 @@ function getAllData(data) {
                     let $ = cheerio.load(res.text);
                     let header = $('form[name=_newscontent_fromname] > div');
                     let value = {};
-                    value.title = header.find('h1')[0].children[0].data;
+                    value.title = header. find('h1')[0].children[0].data;
                     //console.log(value.title);
                     console.log(header.find('div')[0].children[0].data);
                     let temp_str = header.find('div')[0].children[0].data;
@@ -69,7 +76,7 @@ function getAllData(data) {
                     value.from = header.find('div')[0].children[0].data.substring(end);
                     value.url = data.url;
                     value.time = new Date();
-
+                    console.log(value);
                     //该项为原始通知部分网页，若有图片应注意图片的src需添加前缀，同时应该去除所有标签class,开发区校区通知不需要故而省去，只执行添加附件
                     let content = $('div#vsb_content');
                     let files = $('form[name=_newscontent_fromname] > ul');
@@ -128,11 +135,15 @@ function getAllData(data) {
 async function start(url) {
     let value = await getNoticeTitleAndUrl(url);
     for (let element of value) {
+
         if (element.hasOwnProperty('next')) {
             await start(element.next);
+
         } else {
             await getAllData(element);
-        }
+        }/*else{
+            await
+        }*/
     }
 }
 
