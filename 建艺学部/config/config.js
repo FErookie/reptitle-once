@@ -9,7 +9,7 @@ module.exports = {
     db: {
         name: 'postgres',
         username: 'postgres',
-        pwd: 'postgres',
+        pwd: 'gaoshuda',
         host: '127.0.0.1',
         port: '5432',
         database: 'jydutNews',

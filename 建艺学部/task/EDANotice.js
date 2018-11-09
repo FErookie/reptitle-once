@@ -27,20 +27,28 @@ function getNoticeTitleAndUrl(url) {
                     let data = [];
                     let html = $('div#ContentField');
                     html.find('li').each((index, element) => {
+                        let begin = element.children[1].children[0].next.attribs.href.indexOf('i');
+                        element.children[1].children[0].next.attribs.href = element.children[1].children[0].next.attribs.href.substring(begin , );
                         data.push({
                             name: element.children[1].children[0].next.children[0].data,
-                            url: base + /(\/info[\s\S]{0,200})/.exec(element.children[1].children[0].next.attribs.href)[1]
+                            url: base + '/' + element.children[1].children[0].next.attribs.href
                         });
-                        console.log(data);
 
                     });
                     html.find('a.Next').each((index, element) => {
+
                         if (element.children[0].data === '下页') {
+                            let begin = element.attribs.href.indexOf('/');
+                            if(begin != -1){
+                                element.attribs.href = element.attribs.href.substring(begin , );
+                            }
                             data.push({
-                                next: base + '/index/xwgg/gg/' + /[\s\S]{0,200}([0-9]{1,10}.htm)$/.exec(element.attribs.href)[1]
+                                next: base + '/index/xwgg/gg/' + (element.attribs.href)
                             })
                         }
                     });
+                    console.log(data);
+
                     resolve(data);
                 }
             });
@@ -122,9 +130,9 @@ async function start(url) {
     for (let element of value) {
         if (element.hasOwnProperty('next')) {
             await start(element.next);
-        } else {
+        } /*else {
             await getAllData(element);
-        }
+        }*/
     }
 }
 
